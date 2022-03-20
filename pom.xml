@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.1.6.RELEASE</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+	<groupId>com.qingteng</groupId>
+	<artifactId>mavenwithdocker-demo</artifactId>
+	<version>0.0.1-snapshot</version>
+	<name>mavenwithdocker-demo</name>
+	<description>demo for docker-maven-plugin project</description>
+	<properties>
+		<java.version>1.8</java.version>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+			<!-- 排除默认的logback日志，使用log4j-->
+        	<exclusions>
+         		<exclusion>
+                	<groupId>org.springframework.boot</groupId>
+                	<artifactId>spring-boot-starter-logging</artifactId>
+                	</exclusion>
+            	<exclusion>
+                	<groupId>org.slf4j</groupId>
+                	<artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+        	</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
+    	<dependency>
+       		<groupId>org.apache.logging.log4j</groupId>
+       		<artifactId>log4j-core</artifactId>
+       		<version>2.14.1</version>
+    	</dependency>
+    	<!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api -->
+    	<dependency>
+        	<groupId>org.apache.logging.log4j</groupId>
+        	<artifactId>log4j-api</artifactId>
+        	<version>2.14.1</version>
+    	</dependency>
+
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			
+			<!-- docker的maven插件,官网：https://github.com/spotify/docker-maven-plugin -->
+        	<plugin>
+            	<groupId>com.spotify</groupId>
+            	<artifactId>docker-maven-plugin</artifactId>
+            	<version>1.0.0</version>
+            	<configuration>
+                	<!-- 指定生成的镜像名(docker build -t参数的值), 注意imageName一定要是符合正则[a-z0-9-_.]的，否则构建不会成功 -->
+                	<imageName>192.168.8.136:9443/springbootproject/${project.artifactId}:${project.version}</imageName>
+                	<!-- 指定 Dockerfile文件的路径， ${basedir}指的是项目的根路径(pom.xml文件所在的路径)-->
+                	<dockerDirectory>${basedir}/src/main/docker</dockerDirectory> 
+                	<!-- 这里是复制 Maven编译好的jar包到/target/docker目录下的相对路径，同时也会在该目录下复制 Docokerfile文件 -->
+                	<resources>
+                    	<resource>
+                    	    <!--指定docker build过程的本地上下文路径，Maven构建好的成品包存放的位置，默认是target/docker目录-->
+                    	    <!-- 以下targetPath如果选择/，则表示是target/docker目录 -->
+                        	<targetPath>/</targetPath>
+                        	<!--本地jar包所在路径，缺省为target-->
+                        	<directory>${project.build.directory}</directory>
+                        	<!--需要包含本地jar包名称，产出物名称, 缺省为${project.artifactId}-${project.version}-->
+                        	<include>${project.build.finalName}.jar</include>
+                    	</resource>
+                	</resources>
+                	<!-- 指定下远程harbor仓库，该对象配置在了C:\Users\james\.m2\settings.xml-->
+                    <serverId>harbor</serverId>
+            	</configuration>
+        	</plugin>
+        		
+		</plugins>
+	</build>
+	
+</project>
