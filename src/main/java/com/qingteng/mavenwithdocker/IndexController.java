@@ -34,7 +34,7 @@ public class IndexController {
 		
 		// return "Hello World, adrain";
 		//return "the log4j formatmsgnolookups is: " + PropertiesUtil.getProperties().getBooleanProperty("log4j2.formatMsgNoLookups");
-		return "hello jenkins, auto pull from github 9 by " + new SimpleDateFormat("dd-MM-yyyy").format(new Date());
+		return "hello jenkins, auto pull from github v7 by " + new SimpleDateFormat("dd-MM-yyyy").format(new Date());
 		/**
 		 * 下面代码是演示 多模块使用 在 pom.xml 中开启 <dependency>
 		 * <groupId>com.fishpro.helloworld</groupId> <artifactId>service</artifactId>
